@@ -1,0 +1,70 @@
+buildscript {
+    repositories { jcenter() }
+
+    dependencies {
+        classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:2.2.+'
+    }
+}
+
+plugins {
+    id 'org.gretty' version '2.1.0'
+}
+
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
+}
+
+allprojects {
+    ext {
+        githubProjectName = 'eurekax'
+        servletVersion = '2.5'
+        jerseyVersion = '2.30.1'
+        jettisonVersion = '1.4.1'
+        commonsConfigurationVersion = '2.7'
+        jsr305Version = '3.0.2'
+        guiceVersion = '4.2.3'
+        servoVersion = '0.13.0'
+        governatorVersion = '1.17.5'
+        archaiusVersion = '0.7.6'
+        jacksonVersion = '2.10.3'
+        woodstoxVersion = '6.2.1'
+
+        // test deps
+        jetty_version = '9.4.28.v20200408'
+        junit_version = '4.13'
+        mockitoVersion = '3.3.3'
+        mockserverVersion = '3.9.2'
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    group = "com.netflix.${githubProjectName}"
+
+    sourceCompatibility = 11
+    targetCompatibility = 11
+
+    repositories {
+        jcenter()
+    }
+
+    test {
+        forkEvery = 1
+        // setting this property prevents java from grabbing focus when running the tests under osx
+        systemProperty 'java.awt.headless', 'true'
+    }
+
+    jar {
+        manifest {
+            attributes('Build-Time-ISO-8601': new Date().format("yyyy-MM-dd HH:mm:ss"))
+        }
+    }
+}
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
