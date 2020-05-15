@@ -1,10 +1,10 @@
 #Eurekax # incubating
 =====
+
 presumed to be the next generation of eureka
 
 forked from https://github.com/Netflix/eureka.git
 
-presumed to be the next generation of eureka
 
 Building
 ----------
