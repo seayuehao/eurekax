@@ -61,13 +61,12 @@ public class DefaultEurekaServerConfig implements EurekaServerConfig {
     private static final String ARCHAIUS_DEPLOYMENT_ENVIRONMENT = "archaius.deployment.environment";
     private static final String TEST = "test";
     private static final String EUREKA_ENVIRONMENT = "eureka.environment";
-    private static final Logger logger = LoggerFactory
-            .getLogger(DefaultEurekaServerConfig.class);
-    private static final DynamicPropertyFactory configInstance = com.netflix.config.DynamicPropertyFactory
-            .getInstance();
-    private static final DynamicStringProperty EUREKA_PROPS_FILE = DynamicPropertyFactory
-            .getInstance().getStringProperty("eureka.server.props",
-                    "eureka-server");
+    private static final Logger logger = LoggerFactory.getLogger(DefaultEurekaServerConfig.class);
+
+    private static final DynamicPropertyFactory configInstance = com.netflix.config.DynamicPropertyFactory.getInstance();
+
+    private static final DynamicStringProperty EUREKA_PROPS_FILE = DynamicPropertyFactory.getInstance().getStringProperty("eureka.server.props",
+            "eureka-server");
     private static final int TIME_TO_WAIT_FOR_REPLICATION = 30000;
 
     private String namespace = "eureka.";
@@ -97,17 +96,15 @@ public class DefaultEurekaServerConfig implements EurekaServerConfig {
     }
 
     private void init() {
-        String env = ConfigurationManager.getConfigInstance().getString(
-                EUREKA_ENVIRONMENT, TEST);
-        ConfigurationManager.getConfigInstance().setProperty(
-                ARCHAIUS_DEPLOYMENT_ENVIRONMENT, env);
+        String env = DynamicPropertyFactory.getInstance().getStringProperty(EUREKA_ENVIRONMENT, TEST).get();
+//        String env = ConfigurationManager.getConfigInstance().getString(EUREKA_ENVIRONMENT, TEST);
+//        ConfigurationManager.getConfigInstance().setProperty(ARCHAIUS_DEPLOYMENT_ENVIRONMENT, env);
 
         String eurekaPropsFile = EUREKA_PROPS_FILE.get();
         try {
             // ConfigurationManager
             // .loadPropertiesFromResources(eurekaPropsFile);
-            ConfigurationManager
-                    .loadCascadedPropertiesFromResources(eurekaPropsFile);
+            ConfigurationManager.loadCascadedPropertiesFromResources(eurekaPropsFile);
         } catch (IOException e) {
             logger.warn(
                     "Cannot find the properties specified : {}. This may be okay if there are other environment "
@@ -515,9 +512,8 @@ public class DefaultEurekaServerConfig implements EurekaServerConfig {
             String[] pairSplit = remoteRegionUrlWithNamePair.split(pairSplitChar);
             if (pairSplit.length < 2) {
                 logger.error("Error reading eureka remote region urls from property {}. "
-                                + "Invalid entry {} for remote region url. The entry must contain region name and url "
-                                + "separated by a {}. Ignoring this entry.",
-                        new String[]{propName, remoteRegionUrlWithNamePair, pairSplitChar});
+                        + "Invalid entry {} for remote region url. The entry must contain region name and url "
+                        + "separated by a {}. Ignoring this entry.", propName, remoteRegionUrlWithNamePair, pairSplitChar);
             } else {
                 String regionName = pairSplit[0];
                 String regionUrl = pairSplit[1];

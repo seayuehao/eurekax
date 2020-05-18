@@ -193,15 +193,6 @@ public class PeerEurekaNodes {
     }
 
     /**
-     * @param url the service url of the replica node that the check is made.
-     * @return true, if the url represents the current node which is trying to
-     * replicate, false otherwise.
-     * @deprecated 2016-06-27 use instance version of {@link #isThisMyUrl(String)}
-     * <p>
-     * Checks if the given service url contains the current host which is trying
-     * to replicate. Only after the EIP binding is done the host has a chance to
-     * identify itself in the list of replica nodes and needs to take itself out
-     * of replication traffic.
      */
     public static boolean isThisMe(String url) {
         InstanceInfo myInfo = ApplicationInfoManager.getInstance().getInfo();

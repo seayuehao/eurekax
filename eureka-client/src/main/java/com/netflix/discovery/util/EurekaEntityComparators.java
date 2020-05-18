@@ -1,14 +1,13 @@
 package com.netflix.discovery.util;
 
-import java.util.List;
-import java.util.Map;
-
-import com.netflix.appinfo.AmazonInfo;
 import com.netflix.appinfo.DataCenterInfo;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.appinfo.LeaseInfo;
 import com.netflix.discovery.shared.Application;
 import com.netflix.discovery.shared.Applications;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * For test use.
@@ -30,20 +29,8 @@ public final class EurekaEntityComparators {
         if (first.getClass() != second.getClass()) {
             return false;
         }
-        if (first instanceof AmazonInfo) {
-            return equal((AmazonInfo) first, (AmazonInfo) second);
-        }
-        return first.getName() == second.getName();
-    }
 
-    public static boolean equal(AmazonInfo first, AmazonInfo second) {
-        if (first == second) {
-            return true;
-        }
-        if (first == null || first == null && second != null) {
-            return false;
-        }
-        return equal(first.getMetadata(), second.getMetadata());
+        return first.getName() == second.getName();
     }
 
     public static boolean subsetOf(DataCenterInfo first, DataCenterInfo second) {
@@ -56,23 +43,8 @@ public final class EurekaEntityComparators {
         if (first.getClass() != second.getClass()) {
             return false;
         }
-        if (first instanceof AmazonInfo) {
-            return subsetOf((AmazonInfo) first, (AmazonInfo) second);
-        }
         return first.getName() == second.getName();
     }
-
-    public static boolean subsetOf(AmazonInfo first, AmazonInfo second) {
-        if (first == second) {
-            return true;
-        }
-        if (first == null || first == null && second != null) {
-            return false;
-        }
-
-        return first.getMetadata().entrySet().containsAll(second.getMetadata().entrySet());
-    }
-
 
     public static boolean equal(LeaseInfo first, LeaseInfo second) {
         if (first == second) {
@@ -184,7 +156,7 @@ public final class EurekaEntityComparators {
         if (first.getLastDirtyTimestamp() != null ? !first.getLastDirtyTimestamp().equals(second.getLastDirtyTimestamp()) : second.getLastDirtyTimestamp() != null) {
             return false;
         }
-        if (first.getLastUpdatedTimestamp()!= second.getLastUpdatedTimestamp()) {
+        if (first.getLastUpdatedTimestamp() != second.getLastUpdatedTimestamp()) {
             return false;
         }
         if (first.isCoordinatingDiscoveryServer() != null ? !first.isCoordinatingDiscoveryServer().equals(second.isCoordinatingDiscoveryServer()) : second.isCoordinatingDiscoveryServer() != null) {
@@ -242,7 +214,7 @@ public final class EurekaEntityComparators {
         if (first.getStatus() != null ? !first.getStatus().equals(second.getStatus()) : second.getStatus() != null) {
             return false;
         }
-        if (first.getLastUpdatedTimestamp()!= second.getLastUpdatedTimestamp()) {
+        if (first.getLastUpdatedTimestamp() != second.getLastUpdatedTimestamp()) {
             return false;
         }
         return true;

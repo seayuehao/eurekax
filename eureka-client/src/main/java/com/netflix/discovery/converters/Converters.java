@@ -16,18 +16,7 @@
 
 package com.netflix.discovery.converters;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import com.netflix.appinfo.AmazonInfo;
 import com.netflix.appinfo.DataCenterInfo;
-import com.netflix.appinfo.DataCenterInfo.Name;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.appinfo.InstanceInfo.InstanceStatus;
 import com.netflix.appinfo.InstanceInfo.PortType;
@@ -45,6 +34,15 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
 /**
  * The custom {@link com.netflix.discovery.provider.Serializer} for serializing and deserializing the registry
  * information from and to the eureka server.
@@ -61,7 +59,6 @@ import org.slf4j.LoggerFactory;
  * </p>
  *
  * @author Karthik Ranganathan, Greg Kim
- *
  */
 public final class Converters {
     private static final String UNMARSHAL_ERROR = "UNMARSHAL_ERROR";
@@ -318,13 +315,8 @@ public final class Converters {
             if (info.getDataCenterInfo() != null) {
                 writer.startNode(NODE_DATACENTER);
                 // This is needed for backward compat. for now.
-                if (info.getDataCenterInfo().getName() == Name.Amazon) {
-                    writer.addAttribute("class",
-                            "com.netflix.appinfo.AmazonInfo");
-                } else {
-                    writer.addAttribute("class",
-                            "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo");
-                }
+                writer.addAttribute("class",
+                        "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo");
                 context.convertAnother(info.getDataCenterInfo());
                 writer.endNode();
             }
@@ -462,18 +454,6 @@ public final class Converters {
             // For backward compat. for now
             writer.setValue(info.getName().name());
             writer.endNode();
-
-            if (info.getName() == Name.Amazon) {
-                AmazonInfo aInfo = (AmazonInfo) info;
-                writer.startNode(NODE_METADATA);
-                // for backward compat. for now
-                if (aInfo.getMetadata().size() == 0) {
-                    writer.addAttribute("class",
-                            "java.util.Collections$EmptyMap");
-                }
-                context.convertAnother(aInfo.getMetadata());
-                writer.endNode();
-            }
         }
 
         /*
@@ -494,30 +474,17 @@ public final class Converters {
 
                 if (ELEM_NAME.equals(reader.getNodeName())) {
                     final String dataCenterName = reader.getValue();
-                    if (DataCenterInfo.Name.Amazon.name().equalsIgnoreCase(
-                            dataCenterName)) {
-                        info = new AmazonInfo();
-                    } else {
-                        final DataCenterInfo.Name name =
-                                DataCenterInfo.Name.valueOf(dataCenterName);
-                        info = new DataCenterInfo() {
+                    final DataCenterInfo.Name name =
+                            DataCenterInfo.Name.valueOf(dataCenterName);
+                    info = new DataCenterInfo() {
 
-                            @Override
-                            public Name getName() {
-                                return name;
-                            }
-                        };
-                    }
-                } else if (NODE_METADATA.equals(reader.getNodeName())) {
-                    if (info.getName() == Name.Amazon) {
-                        Map<String, String> metadataMap = (Map<String, String>) context
-                                .convertAnother(info, Map.class);
-                        Map<String, String> metadataMapInter = new HashMap<String, String>(metadataMap.size());
-                        for (Map.Entry<String, String> entry : metadataMap.entrySet()) {
-                            metadataMapInter.put(StringCache.intern(entry.getKey()), StringCache.intern(entry.getValue()));
+                        @Override
+                        public Name getName() {
+                            return name;
                         }
-                        ((AmazonInfo) info).setMetadata(metadataMapInter);
-                    }
+                    };
+                } else if (NODE_METADATA.equals(reader.getNodeName())) {
+
                 }
 
                 reader.moveUp();
@@ -719,10 +686,8 @@ public final class Converters {
      * Marshal all the objects containing an {@link Auto} annotation
      * automatically.
      *
-     * @param o
-     *            - The object's fields that needs to be marshalled.
-     * @param writer
-     *            - The writer for which to write the information to.
+     * @param o      - The object's fields that needs to be marshalled.
+     * @param writer - The writer for which to write the information to.
      */
     private static void autoMarshalEligible(Object o,
                                             HierarchicalStreamWriter writer) {
@@ -751,11 +716,9 @@ public final class Converters {
      * Unmarshal all the elements to their field values if the fields have the
      * {@link Auto} annotation defined.
      *
-     * @param reader
-     *            - The reader where the elements can be read.
-     * @param o
-     *            - The object for which the value of fields need to be
-     *            populated.
+     * @param reader - The reader where the elements can be read.
+     * @param o      - The object for which the value of fields need to be
+     *               populated.
      */
     private static void autoUnmarshalEligible(HierarchicalStreamReader reader,
                                               Object o) {

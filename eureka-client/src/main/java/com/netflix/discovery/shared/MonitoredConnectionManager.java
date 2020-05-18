@@ -50,7 +50,6 @@ public class MonitoredConnectionManager {
 //    @Override
 //    public ClientConnectionRequest requestConnection(HttpRoute route,
 //                                                     Object state) {
-//        // TODO Auto-generated method stub
 //        return super.requestConnection(route, state);
 //    }
 

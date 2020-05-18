@@ -3,8 +3,6 @@ package com.netflix.discovery.shared.transport.jersey2;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.core.MultivaluedMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A version of Jersey2 {@link com.netflix.discovery.shared.transport.EurekaHttpClient} to be used by applications.
@@ -22,10 +20,11 @@ public class Jersey2ApplicationClient extends AbstractJersey2EurekaHttpClient {
 
     @Override
     protected void addExtraHeaders(Builder webResource) {
-        if (additionalHeaders != null) {
-            for (Map.Entry<String, List<Object>> entry: additionalHeaders.entrySet()) {
-                webResource.header(entry.getKey(), entry.getValue());
-            }
-        }
+        if (null == additionalHeaders) return;
+
+        webResource.headers(additionalHeaders);
+//            for (Map.Entry<String, List<Object>> entry : additionalHeaders.entrySet()) {
+//                webResource.header(entry.getKey(), entry.getValue());
+//            }
     }
 }

@@ -57,6 +57,7 @@ import java.util.Date;
  * @author Karthik Ranganathan, Greg Kim, David Liu
  */
 public class EurekaBootStrap implements ServletContextListener {
+
     private static final Logger logger = LoggerFactory.getLogger(EurekaBootStrap.class);
 
     private static final String TEST = "test";

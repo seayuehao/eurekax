@@ -130,14 +130,11 @@ public class ResponseCacheImpl implements ResponseCache {
         this.readWriteCacheMap =
                 CacheBuilder.newBuilder().initialCapacity(serverConfig.getInitialCapacityOfResponseCache())
                         .expireAfterWrite(serverConfig.getResponseCacheAutoExpirationInSeconds(), TimeUnit.SECONDS)
-                        .removalListener(new RemovalListener<Key, Value>() {
-                            @Override
-                            public void onRemoval(RemovalNotification<Key, Value> notification) {
-                                Key removedKey = notification.getKey();
-                                if (removedKey.hasRegions()) {
-                                    Key cloneWithNoRegions = removedKey.cloneWithoutRegions();
-                                    regionSpecificKeys.remove(cloneWithNoRegions, removedKey);
-                                }
+                        .removalListener((RemovalListener<Key, Value>) notification -> {
+                            Key removedKey = notification.getKey();
+                            if (removedKey.hasRegions()) {
+                                Key cloneWithNoRegions = removedKey.cloneWithoutRegions();
+                                regionSpecificKeys.remove(cloneWithNoRegions, removedKey);
                             }
                         })
                         .build(new CacheLoader<Key, Value>() {

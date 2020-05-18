@@ -1,14 +1,5 @@
 package com.netflix.discovery.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-
-import com.netflix.appinfo.AmazonInfo;
-import com.netflix.appinfo.AmazonInfo.MetaDataKey;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.appinfo.InstanceInfo.ActionType;
 import com.netflix.appinfo.InstanceInfo.Builder;
@@ -17,6 +8,13 @@ import com.netflix.appinfo.InstanceInfo.PortType;
 import com.netflix.appinfo.LeaseInfo;
 import com.netflix.discovery.shared.Application;
 import com.netflix.discovery.shared.Applications;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 import static com.netflix.discovery.util.EurekaEntityFunctions.mergeApplications;
 import static com.netflix.discovery.util.EurekaEntityFunctions.toApplicationMap;
@@ -158,7 +156,7 @@ public class InstanceInfoGenerator {
 
     public Applications takeDeltaForDelete(boolean useInstanceId, int instanceCount) {
         List<InstanceInfo> instanceInfoList = new ArrayList<>();
-        for (int i = 0; i < instanceCount; i ++) {
+        for (int i = 0; i < instanceCount; i++) {
             instanceInfoList.add(this.generateInstanceInfo(i, i, useInstanceId, ActionType.DELETED));
         }
         Applications delete = EurekaEntityFunctions.toApplications(toApplicationMap(instanceInfoList));
@@ -180,17 +178,6 @@ public class InstanceInfoGenerator {
             instanceId = instanceId + '_' + appName;
         }
 
-        AmazonInfo dataCenterInfo = AmazonInfo.Builder.newBuilder()
-                .addMetadata(MetaDataKey.accountId, "testAccountId")
-                .addMetadata(MetaDataKey.amiId, String.format("ami-%04d%04d", appIndex, appInstanceId))
-                .addMetadata(MetaDataKey.availabilityZone, zone)
-                .addMetadata(MetaDataKey.instanceId, instanceId)
-                .addMetadata(MetaDataKey.instanceType, "m2.xlarge")
-                .addMetadata(MetaDataKey.localHostname, privateHostname)
-                .addMetadata(MetaDataKey.localIpv4, privateIp)
-                .addMetadata(MetaDataKey.publicHostname, hostName)
-                .addMetadata(MetaDataKey.publicIpv4, publicIp)
-                .build();
 
         String unsecureURL = "http://" + hostName + ":8080";
         String secureURL = "https://" + hostName + ":8081";
@@ -225,7 +212,7 @@ public class InstanceInfoGenerator {
                 .setStatus(InstanceStatus.UP)
                 .setVIPAddress(appName + ":8080")
                 .setSecureVIPAddress(appName + ":8081")
-                .setDataCenterInfo(dataCenterInfo)
+                .setDataCenterInfo(null)
                 .setLastUpdatedTimestamp(System.currentTimeMillis() - 100)
                 .setLastDirtyTimestamp(System.currentTimeMillis() - 100)
                 .setIsCoordinatingDiscoveryServer(true)

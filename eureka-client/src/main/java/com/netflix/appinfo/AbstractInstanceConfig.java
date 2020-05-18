@@ -112,7 +112,6 @@ public abstract class AbstractInstanceConfig implements EurekaInstanceConfig {
      */
     @Override
     public boolean getSecurePortEnabled() {
-        // TODO Auto-generated method stub
         return SECURE_PORT_ENABLED;
     }
 
@@ -165,7 +164,6 @@ public abstract class AbstractInstanceConfig implements EurekaInstanceConfig {
      */
     @Override
     public String getASGName() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -186,7 +184,6 @@ public abstract class AbstractInstanceConfig implements EurekaInstanceConfig {
      */
     @Override
     public Map<String, String> getMetadataMap() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -197,7 +194,6 @@ public abstract class AbstractInstanceConfig implements EurekaInstanceConfig {
      */
     @Override
     public DataCenterInfo getDataCenterInfo() {
-        // TODO Auto-generated method stub
         return info;
     }
 

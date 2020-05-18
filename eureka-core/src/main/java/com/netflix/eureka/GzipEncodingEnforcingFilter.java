@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Singleton
 public class GzipEncodingEnforcingFilter implements Filter {
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
     }

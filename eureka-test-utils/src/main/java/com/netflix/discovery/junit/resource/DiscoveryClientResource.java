@@ -195,9 +195,9 @@ public class DiscoveryClientResource extends ExternalResource {
             resource.after();
         }
         for (String property : SYSTEM_PROPERTY_TRACKER) {
-            ConfigurationManager.getConfigInstance().clearProperty(property);
+//            ConfigurationManager.getConfigInstance().clearProperty(property);
         }
-        clearDiscoveryClientConfig();
+//        clearDiscoveryClientConfig();
     }
 
     public DiscoveryClientRuleBuilder fork() {
@@ -226,24 +226,24 @@ public class DiscoveryClientResource extends ExternalResource {
         return new DiscoveryClientRuleBuilder();
     }
 
-    public static void setupDiscoveryClientConfig(int serverPort, String path) {
-        ConfigurationManager.getConfigInstance().setProperty("eureka.shouldFetchRegistry", "true");
-        ConfigurationManager.getConfigInstance().setProperty("eureka.responseCacheAutoExpirationInSeconds", "10");
-        ConfigurationManager.getConfigInstance().setProperty("eureka.client.refresh.interval", CLIENT_REFRESH_RATE);
-        ConfigurationManager.getConfigInstance().setProperty("eureka.registration.enabled", "false");
-        ConfigurationManager.getConfigInstance().setProperty("eureka.fetchRemoteRegionsRegistry", REMOTE_REGION);
-        ConfigurationManager.getConfigInstance().setProperty("eureka.myregion.availabilityZones", REMOTE_ZONE);
-        ConfigurationManager.getConfigInstance().setProperty("eureka.serviceUrl.default",
-                "http://localhost:" + serverPort + path);
-    }
+//    public static void setupDiscoveryClientConfig(int serverPort, String path) {
+//        ConfigurationManager.getConfigInstance().setProperty("eureka.shouldFetchRegistry", "true");
+//        ConfigurationManager.getConfigInstance().setProperty("eureka.responseCacheAutoExpirationInSeconds", "10");
+//        ConfigurationManager.getConfigInstance().setProperty("eureka.client.refresh.interval", CLIENT_REFRESH_RATE);
+//        ConfigurationManager.getConfigInstance().setProperty("eureka.registration.enabled", "false");
+//        ConfigurationManager.getConfigInstance().setProperty("eureka.fetchRemoteRegionsRegistry", REMOTE_REGION);
+//        ConfigurationManager.getConfigInstance().setProperty("eureka.myregion.availabilityZones", REMOTE_ZONE);
+//        ConfigurationManager.getConfigInstance().setProperty("eureka.serviceUrl.default",
+//                "http://localhost:" + serverPort + path);
+//    }
 
-    public static void clearDiscoveryClientConfig() {
-        ConfigurationManager.getConfigInstance().clearProperty("eureka.client.refresh.interval");
-        ConfigurationManager.getConfigInstance().clearProperty("eureka.registration.enabled");
-        ConfigurationManager.getConfigInstance().clearProperty("eureka.fetchRemoteRegionsRegistry");
-        ConfigurationManager.getConfigInstance().clearProperty("eureka.myregion.availabilityZones");
-        ConfigurationManager.getConfigInstance().clearProperty("eureka.serviceUrl.default");
-    }
+//    public static void clearDiscoveryClientConfig() {
+//        ConfigurationManager.getConfigInstance().clearProperty("eureka.client.refresh.interval");
+//        ConfigurationManager.getConfigInstance().clearProperty("eureka.registration.enabled");
+//        ConfigurationManager.getConfigInstance().clearProperty("eureka.fetchRemoteRegionsRegistry");
+//        ConfigurationManager.getConfigInstance().clearProperty("eureka.myregion.availabilityZones");
+//        ConfigurationManager.getConfigInstance().clearProperty("eureka.serviceUrl.default");
+//    }
 
     public static EurekaClient setupDiscoveryClient(InstanceInfo clientInstanceInfo) {
         DefaultEurekaClientConfig config = new DefaultEurekaClientConfig();
@@ -283,7 +283,7 @@ public class DiscoveryClientResource extends ExternalResource {
 
     private static void bindProperty(String propertyName, String value) {
         SYSTEM_PROPERTY_TRACKER.add(propertyName);
-        ConfigurationManager.getConfigInstance().setProperty(propertyName, value);
+//        ConfigurationManager.getConfigInstance().setProperty(propertyName, value);
     }
 
     public static class DiscoveryClientRuleBuilder {

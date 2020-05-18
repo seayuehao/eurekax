@@ -163,20 +163,17 @@ public class RemoteRegionRegistry implements LookupService<String> {
         }
 
         // remote region fetch
-        Runnable remoteRegionFetchTask = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (fetchRegistry()) {
-                        readyForServingData = true;
-                    } else {
-                        logger.warn("Failed to fetch remote registry. This means this eureka server is not "
-                                + "ready for serving traffic.");
-                    }
-                } catch (Throwable e) {
-                    logger.error(
-                            "Error getting from remote registry :", e);
+        Runnable remoteRegionFetchTask = () -> {
+            try {
+                if (fetchRegistry()) {
+                    readyForServingData = true;
+                } else {
+                    logger.warn("Failed to fetch remote registry. This means this eureka server is not "
+                            + "ready for serving traffic.");
                 }
+            } catch (Throwable e) {
+                logger.error(
+                        "Error getting from remote registry :", e);
             }
         };
 

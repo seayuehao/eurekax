@@ -16,16 +16,16 @@
 
 package com.netflix.appinfo;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.netflix.appinfo.InstanceInfo.InstanceStatus;
 import com.netflix.appinfo.providers.EurekaConfigBasedInstanceInfoProvider;
 import com.netflix.discovery.StatusChangeEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The class that initializes information required for registration with
@@ -40,9 +40,7 @@ import org.slf4j.LoggerFactory;
  * {@link AbstractInstanceConfig}.
  * </p>
  *
- *
  * @author Karthik Ranganathan, Greg Kim
- *
  */
 @Singleton
 public class ApplicationInfoManager {
@@ -145,7 +143,7 @@ public class ApplicationInfoManager {
      * Register user-specific instance meta data. Application can send any other
      * additional meta data that need to be accessed for other reasons.The data
      * will be periodically sent to the eureka server.
-     *
+     * <p>
      * Please Note that metadata added via this method is not guaranteed to be submitted
      * to the eureka servers upon initial registration, and may be submitted as an update
      * at a subsequent time. If you want guaranteed metadata for initial registration,
@@ -194,17 +192,12 @@ public class ApplicationInfoManager {
      * Refetches the hostname to check if it has changed. If it has, the entire
      * <code>DataCenterInfo</code> is refetched and passed on to the eureka
      * server on next heartbeat.
-     *
+     * <p>
      * see {@link InstanceInfo#getHostName()} for explanation on why the hostname is used as the default address
      */
     public void refreshDataCenterInfoIfRequired() {
         String existingAddress = instanceInfo.getHostName();
-
         String existingSpotInstanceAction = null;
-        if (instanceInfo.getDataCenterInfo() instanceof AmazonInfo) {
-            existingSpotInstanceAction = ((AmazonInfo) instanceInfo.getDataCenterInfo()).get(AmazonInfo.MetaDataKey.spotInstanceAction);
-        }
-
         String newAddress;
         if (config instanceof RefreshableInstanceConfig) {
             // Refresh data center info, and return up to date address
@@ -218,16 +211,6 @@ public class ApplicationInfoManager {
             logger.warn("The address changed from : {} => {}", existingAddress, newAddress);
             updateInstanceInfo(newAddress, newIp);
         }
-
-        if (config.getDataCenterInfo() instanceof AmazonInfo) {
-            String newSpotInstanceAction = ((AmazonInfo) config.getDataCenterInfo()).get(AmazonInfo.MetaDataKey.spotInstanceAction);
-            if (newSpotInstanceAction != null && !newSpotInstanceAction.equals(existingSpotInstanceAction)) {
-                logger.info(String.format("The spot instance termination action changed from: %s => %s",
-                        existingSpotInstanceAction,
-                        newSpotInstanceAction));
-                updateInstanceInfo(null , null );
-            }
-        }        
     }
 
     private void updateInstanceInfo(String newAddress, String newIp) {

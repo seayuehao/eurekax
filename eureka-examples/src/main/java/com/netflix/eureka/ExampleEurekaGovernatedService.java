@@ -44,19 +44,19 @@ public class ExampleEurekaGovernatedService {
         return injector;
     }
 
-    public static void main(String[] args) throws Exception {
-        LifecycleInjector injector = null;
-        try {
-            injector = init();
-            injector.awaitTermination();
-        } catch (Exception e) {
-            System.out.println("Error starting the sample service: " + e);
-            e.printStackTrace();
-        } finally {
-            if (injector != null) {
-                injector.shutdown();
-            }
-        }
-    }
+//    public static void main(String[] args) throws Exception {
+//        LifecycleInjector injector = null;
+//        try {
+//            injector = init();
+//            injector.awaitTermination();
+//        } catch (Exception e) {
+//            System.out.println("Error starting the sample service: " + e);
+//            e.printStackTrace();
+//        } finally {
+//            if (injector != null) {
+//                injector.shutdown();
+//            }
+//        }
+//    }
 
 }

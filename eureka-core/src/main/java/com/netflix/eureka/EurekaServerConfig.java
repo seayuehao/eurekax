@@ -531,8 +531,6 @@ public interface EurekaServerConfig {
 
     /**
      * Get the list of remote region urls.
-     * @return - array of string representing {@link java.net.URL}s.
-     * @deprecated Use {@link #getRemoteRegionUrlsWithName()}
      */
     String[] getRemoteRegionUrls();
 

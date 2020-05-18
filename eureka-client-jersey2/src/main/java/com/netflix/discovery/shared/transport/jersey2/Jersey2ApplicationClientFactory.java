@@ -100,7 +100,7 @@ public class Jersey2ApplicationClientFactory implements TransportClientFactory {
         sslContext.ifPresent(clientBuilder::withSSLContext);
         hostnameVerifier.ifPresent(clientBuilder::withHostnameVerifier);
         
-        if ("true".equals(System.getProperty("com.netflix.eureka.shouldSSLConnectionsUseSystemSocketFactory"))) {
+        if (Boolean.TRUE.toString().equals(System.getProperty("com.netflix.eureka.shouldSSLConnectionsUseSystemSocketFactory"))) {
             clientBuilder.withClientName("DiscoveryClient-HTTPClient-System").withSystemSSLConfiguration();
         } else if (clientConfig.getProxyHost() != null && clientConfig.getProxyPort() != null) {
             clientBuilder.withClientName("Proxy-DiscoveryClient-HTTPClient")
@@ -139,15 +139,10 @@ public class Jersey2ApplicationClientFactory implements TransportClientFactory {
         public Jersey2ApplicationClientFactory build() {
             ClientBuilder clientBuilder = ClientBuilder.newBuilder();
             ClientConfig clientConfig = new ClientConfig();
-            
-            for (ClientRequestFilter filter : additionalFilters) {
-                clientConfig.register(filter);
-            }
 
-            for (Feature feature : features) {
-                clientConfig.register(feature);
-            }
-            
+            additionalFilters.forEach(i-> clientConfig.register(i));
+            features.forEach(i-> clientConfig.register(i));
+
             addProviders(clientConfig);
             addSSLConfiguration(clientBuilder);
             addProxyConfiguration(clientConfig);
@@ -158,12 +153,8 @@ public class Jersey2ApplicationClientFactory implements TransportClientFactory {
 
             // Common properties to all clients
             final String fullUserAgentName = (userAgent == null ? clientName : userAgent) + "/v" + buildVersion();
-            clientBuilder.register(new ClientRequestFilter() { // Can we do it better, without filter?
-                @Override
-                public void filter(ClientRequestContext requestContext) {
-                    requestContext.getHeaders().put(HttpHeaders.USER_AGENT, Collections.<Object>singletonList(fullUserAgentName));
-                }
-            });
+            // Can we do it better, without filter?
+            clientBuilder.register((ClientRequestFilter) requestContext -> requestContext.getHeaders().put(HttpHeaders.USER_AGENT, Collections.<Object>singletonList(fullUserAgentName)));
             clientConfig.property(ClientProperties.FOLLOW_REDIRECTS, allowRedirect);
             clientConfig.property(ClientProperties.READ_TIMEOUT, readTimeout);
             clientConfig.property(ClientProperties.CONNECT_TIMEOUT, connectionTimeout);

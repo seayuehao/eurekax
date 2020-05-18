@@ -13,6 +13,8 @@ public class Jersey2DynamicGZIPContentEncodingFilter implements ClientRequestFil
 
     private final EurekaServerConfig config;
 
+    private static final String GZIP = "gzip";
+
     public Jersey2DynamicGZIPContentEncodingFilter(EurekaServerConfig config) {
         this.config = config;
     }
@@ -20,13 +22,13 @@ public class Jersey2DynamicGZIPContentEncodingFilter implements ClientRequestFil
     @Override
     public void filter(ClientRequestContext requestContext) throws IOException {
         if (!requestContext.getHeaders().containsKey(HttpHeaders.ACCEPT_ENCODING)) {
-            requestContext.getHeaders().add(HttpHeaders.ACCEPT_ENCODING, "gzip");
+            requestContext.getHeaders().add(HttpHeaders.ACCEPT_ENCODING, GZIP);
         }
 
         if (hasEntity(requestContext) && isCompressionEnabled()) {
             Object contentEncoding = requestContext.getHeaders().getFirst(HttpHeaders.CONTENT_ENCODING);
             if (!"gzip".equals(contentEncoding)) {
-                requestContext.getHeaders().add(HttpHeaders.CONTENT_ENCODING, "gzip");
+                requestContext.getHeaders().add(HttpHeaders.CONTENT_ENCODING, GZIP);
             }
         }
     }
@@ -34,7 +36,7 @@ public class Jersey2DynamicGZIPContentEncodingFilter implements ClientRequestFil
     @Override
     public void filter(ClientRequestContext requestContext, ClientResponseContext responseContext) throws IOException {
         Object contentEncoding = responseContext.getHeaders().getFirst(HttpHeaders.CONTENT_ENCODING);
-        if ("gzip".equals(contentEncoding)) {
+        if (GZIP.equals(contentEncoding)) {
             responseContext.getHeaders().remove(HttpHeaders.CONTENT_ENCODING);
         }
     }

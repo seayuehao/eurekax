@@ -1,6 +1,5 @@
 package com.netflix.discovery.util;
 
-import com.netflix.appinfo.AmazonInfo;
 import com.netflix.appinfo.InstanceInfo;
 
 /**
@@ -21,9 +20,6 @@ public final class EurekaUtils {
      */
     public static String getPrivateIp(InstanceInfo instanceInfo) {
         String defaultPrivateIp = null;
-        if (instanceInfo.getDataCenterInfo() instanceof AmazonInfo) {
-            defaultPrivateIp = ((AmazonInfo) instanceInfo.getDataCenterInfo()).get(AmazonInfo.MetaDataKey.localIpv4);
-        }
 
         if (isNullOrEmpty(defaultPrivateIp)) {
             // no other information, best effort
@@ -41,12 +37,6 @@ public final class EurekaUtils {
      * @return true if the record contains an EC2 style "i-*" id
      */
     public static boolean isInEc2(InstanceInfo instanceInfo) {
-        if (instanceInfo.getDataCenterInfo() instanceof AmazonInfo) {
-            String instanceId = ((AmazonInfo) instanceInfo.getDataCenterInfo()).getId();
-            if (instanceId != null && instanceId.startsWith("i-")) {
-                return true;
-            }
-        }
         return false;
     }
 
@@ -58,12 +48,6 @@ public final class EurekaUtils {
      * @return true if the record contains a non null, non empty AWS vpcId
      */
     public static boolean isInVpc(InstanceInfo instanceInfo) {
-        if (instanceInfo.getDataCenterInfo() instanceof AmazonInfo) {
-            AmazonInfo info = (AmazonInfo) instanceInfo.getDataCenterInfo();
-            String vpcId = info.get(AmazonInfo.MetaDataKey.vpcId);
-            return !isNullOrEmpty(vpcId);
-        }
-
         return false;
     }
 

@@ -25,8 +25,8 @@ public final class Archaius1Utils {
         DynamicPropertyFactory configInstance = DynamicPropertyFactory.getInstance();
         DynamicStringProperty EUREKA_PROPS_FILE = configInstance.getStringProperty("eureka.client.props", configName);
 
-        String env = ConfigurationManager.getConfigInstance().getString(EUREKA_ENVIRONMENT, "test");
-        ConfigurationManager.getConfigInstance().setProperty(ARCHAIUS_DEPLOYMENT_ENVIRONMENT, env);
+//        String env = ConfigurationManager.getConfigInstance().getString(EUREKA_ENVIRONMENT, "test");
+//        ConfigurationManager.getConfigInstance().setProperty(ARCHAIUS_DEPLOYMENT_ENVIRONMENT, env);
 
         String eurekaPropsFile = EUREKA_PROPS_FILE.get();
         try {

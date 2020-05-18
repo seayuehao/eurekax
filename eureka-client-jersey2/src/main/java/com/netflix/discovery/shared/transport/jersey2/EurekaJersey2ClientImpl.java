@@ -17,14 +17,8 @@ import org.glassfish.jersey.client.ClientProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.security.KeyStore;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -218,14 +212,14 @@ public class EurekaJersey2ClientImpl implements EurekaJersey2Client {
 
         class MyDefaultApacheHttpClient4Config extends ClientConfig {
             MyDefaultApacheHttpClient4Config() {
-                PoolingHttpClientConnectionManager cm;
+//                PoolingHttpClientConnectionManager cm;
 
                 if (systemSSL) {
-                    cm = createSystemSslCM();
+//                    cm = createSystemSslCM();
                 } else if (trustStoreFileName != null) {
-                    cm = createCustomSslCM();
+//                    cm = createCustomSslCM();
                 } else {
-                    cm = new PoolingHttpClientConnectionManager();
+//                    cm = new PoolingHttpClientConnectionManager();
                 }
 
                 if (proxyHost != null) {
@@ -237,17 +231,17 @@ public class EurekaJersey2ClientImpl implements EurekaJersey2Client {
                 register(discoveryJerseyProvider);
 
                 // Common properties to all clients
-                cm.setDefaultMaxPerRoute(maxConnectionsPerHost);
-                cm.setMaxTotal(maxTotalConnections);
-                property(ApacheClientProperties.CONNECTION_MANAGER, cm);
+//                cm.setDefaultMaxPerRoute(maxConnectionsPerHost);
+//                cm.setMaxTotal(maxTotalConnections);
+                property(ApacheClientProperties.CONNECTION_MANAGER, null);
 
                 String fullUserAgentName = (userAgent == null ? clientName : userAgent) + "/v" + buildVersion();
-                property(CoreProtocolPNames.USER_AGENT, fullUserAgentName);
+//                property(CoreProtocolPNames.USER_AGENT, fullUserAgentName);
 
                 // To pin a client to specific server in case redirect happens, we handle redirects directly
                 // (see DiscoveryClient.makeRemoteCall methods).
                 property(ClientProperties.FOLLOW_REDIRECTS, Boolean.FALSE);
-                property(ClientPNames.HANDLE_REDIRECTS, Boolean.FALSE);
+//                property(ClientPNames.HANDLE_REDIRECTS, Boolean.FALSE);
 
             }
 
@@ -264,51 +258,51 @@ public class EurekaJersey2ClientImpl implements EurekaJersey2Client {
                 property(ClientProperties.PROXY_URI, "http://" + proxyHost + ":" + proxyPort);
             }
 
-            private PoolingHttpClientConnectionManager createSystemSslCM() {
-                ConnectionSocketFactory socketFactory = SSLConnectionSocketFactory.getSystemSocketFactory();
+//            private PoolingHttpClientConnectionManager createSystemSslCM() {
+//                ConnectionSocketFactory socketFactory = SSLConnectionSocketFactory.getSystemSocketFactory();
+//
+//                Registry registry = RegistryBuilder.<ConnectionSocketFactory>create()
+//                        .register(PROTOCOL, socketFactory)
+//                        .build();
+//
+//                return new PoolingHttpClientConnectionManager(registry);
+//            }
 
-                Registry registry = RegistryBuilder.<ConnectionSocketFactory>create()
-                        .register(PROTOCOL, socketFactory)
-                        .build();
-
-                return new PoolingHttpClientConnectionManager(registry);
-            }
-
-            private PoolingHttpClientConnectionManager createCustomSslCM() {
-                FileInputStream fin = null;
-                try {
-                    SSLContext sslContext = SSLContext.getInstance(PROTOCOL_SCHEME);
-                    KeyStore sslKeyStore = KeyStore.getInstance(KEYSTORE_TYPE);
-
-                    fin = new FileInputStream(trustStoreFileName);
-                    sslKeyStore.load(fin, trustStorePassword.toCharArray());
-
-                    TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-                    factory.init(sslKeyStore);
-
-                    TrustManager[] trustManagers = factory.getTrustManagers();
-
-                    sslContext.init(null, trustManagers, null);
-
-                    ConnectionSocketFactory socketFactory =
-                            new SSLConnectionSocketFactory(sslContext, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-
-                    Registry registry = RegistryBuilder.<ConnectionSocketFactory>create()
-                            .register(PROTOCOL, socketFactory)
-                            .build();
-
-                    return new PoolingHttpClientConnectionManager(registry);
-                } catch (Exception ex) {
-                    throw new IllegalStateException("SSL configuration issue", ex);
-                } finally {
-                    if (fin != null) {
-                        try {
-                            fin.close();
-                        } catch (IOException ignore) {
-                        }
-                    }
-                }
-            }
+//            private PoolingHttpClientConnectionManager createCustomSslCM() {
+//                FileInputStream fin = null;
+//                try {
+//                    SSLContext sslContext = SSLContext.getInstance(PROTOCOL_SCHEME);
+//                    KeyStore sslKeyStore = KeyStore.getInstance(KEYSTORE_TYPE);
+//
+//                    fin = new FileInputStream(trustStoreFileName);
+//                    sslKeyStore.load(fin, trustStorePassword.toCharArray());
+//
+//                    TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+//                    factory.init(sslKeyStore);
+//
+//                    TrustManager[] trustManagers = factory.getTrustManagers();
+//
+//                    sslContext.init(null, trustManagers, null);
+//
+//                    ConnectionSocketFactory socketFactory =
+//                            new SSLConnectionSocketFactory(sslContext, SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+//
+//                    Registry registry = RegistryBuilder.<ConnectionSocketFactory>create()
+//                            .register(PROTOCOL, socketFactory)
+//                            .build();
+//
+//                    return new PoolingHttpClientConnectionManager(registry);
+//                } catch (Exception ex) {
+//                    throw new IllegalStateException("SSL configuration issue", ex);
+//                } finally {
+//                    if (fin != null) {
+//                        try {
+//                            fin.close();
+//                        } catch (IOException ignore) {
+//                        }
+//                    }
+//                }
+//            }
         }
     }
 
@@ -334,10 +328,10 @@ public class EurekaJersey2ClientImpl implements EurekaJersey2Client {
         public void run() {
             Stopwatch start = executionTimeStats.start();
             try {
-                HttpClientConnectionManager cm = (HttpClientConnectionManager) apacheHttpClient
-                        .getConfiguration()
-                        .getProperty(ApacheClientProperties.CONNECTION_MANAGER);
-                cm.closeIdleConnections(connectionIdleTimeout, TimeUnit.SECONDS);
+//                HttpClientConnectionManager cm = (HttpClientConnectionManager) apacheHttpClient
+//                        .getConfiguration()
+//                        .getProperty(ApacheClientProperties.CONNECTION_MANAGER);
+//                cm.closeIdleConnections(connectionIdleTimeout, TimeUnit.SECONDS);
             } catch (Throwable e) {
                 s_logger.error("Cannot clean connections", e);
                 cleanupFailed.increment();

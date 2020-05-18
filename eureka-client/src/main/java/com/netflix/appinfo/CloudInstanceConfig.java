@@ -17,7 +17,6 @@
 package com.netflix.appinfo;
 
 import com.google.inject.ProvidedBy;
-import com.netflix.appinfo.AmazonInfo.MetaDataKey;
 import com.netflix.appinfo.providers.CloudInstanceConfigProvider;
 import com.netflix.discovery.CommonConstants;
 import org.slf4j.Logger;
@@ -31,63 +30,32 @@ import javax.inject.Singleton;
  * <p>
  * The information required for registration with eureka by a combination of
  * user-supplied values as well as querying AWS instance metadata.An utility
- * class {@link AmazonInfo} helps in retrieving AWS specific values. Some of
+ * class {@link  } helps in retrieving AWS specific values. Some of
  * that information including <em>availability zone</em> is used for determining
  * which eureka server to communicate to.
  * </p>
  *
  * @author Karthik Ranganathan
- *
  */
 @Singleton
 @ProvidedBy(CloudInstanceConfigProvider.class)
 public class CloudInstanceConfig extends PropertiesInstanceConfig implements RefreshableInstanceConfig {
     private static final Logger logger = LoggerFactory.getLogger(CloudInstanceConfig.class);
 
-    private static final String[] DEFAULT_AWS_ADDRESS_RESOLUTION_ORDER = new String[] {
-            MetaDataKey.publicHostname.name(),
-            MetaDataKey.localIpv4.name()
+    private static final String[] DEFAULT_AWS_ADDRESS_RESOLUTION_ORDER = new String[]{
+//            MetaDataKey.publicHostname.name(),
+//            MetaDataKey.localIpv4.name()
     };
-
-    private final RefreshableAmazonInfoProvider amazonInfoHolder;
 
     public CloudInstanceConfig() {
         this(CommonConstants.DEFAULT_CONFIG_NAMESPACE);
     }
 
     public CloudInstanceConfig(String namespace) {
-        this(namespace, new Archaius1AmazonInfoConfig(namespace), null, true);
-    }
-
-    /* visible for testing */ CloudInstanceConfig(AmazonInfo info) {
-        this(CommonConstants.DEFAULT_CONFIG_NAMESPACE, new Archaius1AmazonInfoConfig(CommonConstants.DEFAULT_CONFIG_NAMESPACE), info, false);
-    }
-
-    /* visible for testing */ CloudInstanceConfig(String namespace, RefreshableAmazonInfoProvider refreshableAmazonInfoProvider) {
         super(namespace);
-        this.amazonInfoHolder = refreshableAmazonInfoProvider;
+//        this(namespace, new Archaius1AmazonInfoConfig(namespace), null, true);
     }
 
-    /* visible for testing */ CloudInstanceConfig(String namespace, AmazonInfoConfig amazonInfoConfig, AmazonInfo initialInfo, boolean eagerInit) {
-        super(namespace);
-        if (eagerInit) {
-            RefreshableAmazonInfoProvider.FallbackAddressProvider fallbackAddressProvider =
-                    new RefreshableAmazonInfoProvider.FallbackAddressProvider() {
-                        @Override
-                        public String getFallbackIp() {
-                            return CloudInstanceConfig.super.getIpAddress();
-                        }
-
-                        @Override
-                        public String getFallbackHostname() {
-                            return CloudInstanceConfig.super.getHostName(false);
-                        }
-            };
-            this.amazonInfoHolder = new RefreshableAmazonInfoProvider(amazonInfoConfig, fallbackAddressProvider);
-        } else {
-            this.amazonInfoHolder = new RefreshableAmazonInfoProvider(initialInfo, amazonInfoConfig);
-        }
-    }
 
     /**
      * @deprecated use {@link #resolveDefaultAddress(boolean)}
@@ -104,12 +72,7 @@ public class CloudInstanceConfig extends PropertiesInstanceConfig implements Ref
 
         for (String name : getDefaultAddressResolutionOrder()) {
             try {
-                AmazonInfo.MetaDataKey key = AmazonInfo.MetaDataKey.valueOf(name);
-                String address = amazonInfoHolder.get().get(key);
-                if (address != null && !address.isEmpty()) {
-                    result = address;
-                    break;
-                }
+
             } catch (Exception e) {
                 logger.error("failed to resolve default address for key {}, skipping", name, e);
             }
@@ -120,29 +83,25 @@ public class CloudInstanceConfig extends PropertiesInstanceConfig implements Ref
 
     @Override
     public String getHostName(boolean refresh) {
-        if (refresh) {
-            amazonInfoHolder.refresh();
-        }
-        return amazonInfoHolder.get().get(MetaDataKey.publicHostname);
+        return null;
     }
 
     @Override
     public String getIpAddress() {
-        return this.shouldBroadcastPublicIpv4Addr() ?  getPublicIpv4Addr() : getPrivateIpv4Addr();
+        return this.shouldBroadcastPublicIpv4Addr() ? getPublicIpv4Addr() : getPrivateIpv4Addr();
     }
 
     private String getPrivateIpv4Addr() {
-        String privateIpv4Addr = amazonInfoHolder.get().get(MetaDataKey.localIpv4);
-        return privateIpv4Addr == null ? super.getIpAddress() : privateIpv4Addr;
+        return null;
     }
+
     private String getPublicIpv4Addr() {
-        String publicIpv4Addr = amazonInfoHolder.get().get(MetaDataKey.publicIpv4);
-        return publicIpv4Addr == null ? super.getIpAddress() : publicIpv4Addr;
+        return null;
     }
 
     @Override
     public DataCenterInfo getDataCenterInfo() {
-        return amazonInfoHolder.get();
+        return null;
     }
 
     @Override
@@ -151,22 +110,4 @@ public class CloudInstanceConfig extends PropertiesInstanceConfig implements Ref
         return (order.length == 0) ? DEFAULT_AWS_ADDRESS_RESOLUTION_ORDER : order;
     }
 
-    /**
-     * @deprecated 2016-09-07
-     *
-     * Refresh instance info - currently only used when in AWS cloud
-     * as a public ip can change whenever an EIP is associated or dissociated.
-     */
-    @Deprecated
-    public synchronized void refreshAmazonInfo() {
-        amazonInfoHolder.refresh();
-    }
-
-    /**
-     * @deprecated 2016-09-07
-     */
-    @Deprecated
-    /* visible for testing */ static boolean shouldUpdate(AmazonInfo newInfo, AmazonInfo oldInfo) {
-        return RefreshableAmazonInfoProvider.shouldUpdate(newInfo, oldInfo);
-    }
 }

@@ -16,6 +16,12 @@
 
 package com.netflix.discovery.util;
 
+import com.netflix.appinfo.InstanceInfo;
+import com.netflix.appinfo.InstanceInfo.ActionType;
+import com.netflix.discovery.shared.Application;
+import com.netflix.discovery.shared.Applications;
+import com.netflix.discovery.util.EurekaEntityTransformers.Transformer;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,12 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.netflix.appinfo.InstanceInfo;
-import com.netflix.appinfo.InstanceInfo.ActionType;
-import com.netflix.discovery.shared.Application;
-import com.netflix.discovery.shared.Applications;
-import com.netflix.discovery.util.EurekaEntityTransformers.Transformer;
+import java.util.stream.Collectors;
 
 /**
  * Collection of functions operating on {@link Applications} and {@link Application} data
@@ -101,11 +102,8 @@ public final class EurekaEntityFunctions {
     }
 
     public static Collection<InstanceInfo> selectAll(Applications applications) {
-        List<InstanceInfo> all = new ArrayList<>();
-        for (Application a : applications.getRegisteredApplications()) {
-            all.addAll(a.getInstances());
-        }
-        return all;
+        if (null == applications || applications.getRegisteredApplications() == null) return List.of();
+        return applications.getRegisteredApplications().stream().flatMap(i-> i.getInstances().stream()).collect(Collectors.toList());
     }
 
     public static Map<String, Application> toApplicationMap(List<InstanceInfo> instances) {
